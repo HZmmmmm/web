@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN" style="height: 100%">
+<head>
+    <meta charset="utf-8">
+    <style>
+        /* 居中时间轴 */
+        .timeline-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+    </style>
+</head>
+<body style="height: 100%; margin: 0">
+<div id="container" style="height: 100%"></div>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.0/echarts.min.js"></script>
+<script type="text/javascript">
+    var dom = document.getElementById('container');
+    var myChart = echarts.init(dom, null, {
+      renderer: 'canvas',
+      useDirtyRect: false
+    });
+    var app = {};
+    var option;
+
+    function loadStaticGraph() {
+      myChart.showLoading();
+      $.getJSON('test1.json', function (graph) {
+        myChart.hideLoading();
+        graph.nodes.forEach(function (node) {
+          node.label = {
+            show: node.symbolSize > 80
+          };
+        });
+
+        option = {
+          title: {
+            text: '',
+            subtext: 'Default layout',
+            top: 'bottom',
+            left: 'right'
+          },
+          tooltip: {
+            trigger: 'item',
+            formatter: function (params) {
+              if (params.dataType === 'node') {
+                return 'userid:' + params.name + ' <br> ' + 'uservalue:' + params.value;
+              }
+              if (params.dataType === 'edge') {
+                var sourceNode = graph.nodes[params.data.source];
+                var targetNode = graph.nodes[params.data.target];
+                return sourceNode.name + ' -> ' + targetNode.name;
+              }
+            }
+          },
+          legend: [
+            {
+              selectedMode: '',
+              data: graph.categories.map(function (a) {
+                return a.name;
+              })
+            }
+          ],
+          animationDuration: 1500,
+          animationEasingUpdate: 'quinticInOut',
+          series: [
+            {
+              name: '',
+              type: 'graph',
+              layout: 'none',
+              data: graph.nodes,
+              links: graph.links,
+              categories: graph.categories,
+              roam: true,
+              label: {
+                position: 'right',
+                formatter: '{b}'
+              },
+              lineStyle: {
+                color: 'target', // 边的颜色按照源节点染色
+                curveness: 0.3
+              },
+              emphasis: {
+                focus: 'adjacency',
+                lineStyle: {
+                  width: 10
+                }
+              }
+            }
+          ]
+        };
+        myChart.setOption(option);
+
+        // Add click event listener to start the infection graph
+        document.addEventListener('click', function () {
+          loadInfectionGraph();
+          // Remove the click event listener to avoid multiple trigger
+          document.removeEventListener('click', arguments.callee);
+        });
+      });
+    }
+
+    function loadInfectionGraph() {
+      // Load and display the infection graph
+      $.getJSON('test2.json', function (infectionData) {
+        // Sort the infection nodes by timestamp
+        infectionData.nodes.sort(function (a, b) {
+          return new Date(a.timesacpe) - new Date(b.timesacpe);
+        });
+
+        // Create a timeline array to store different time states
+        var timelineData = [];
+        var previousNodes = option.series[0].data; // Save the nodes from the static graph
+        var previousLinks = option.series[0].links; // Save the links from the static graph
+        var currentTime = null;
+        var currentNodes = previousNodes.map(function (node) {
+          return Object.assign({}, node);
+        });
+
+        infectionData.nodes.forEach(function (infectionNode) {
+          var time = infectionNode.timesacpe;
+          if (time !== currentTime) {
+            // If the time has changed, save the current state
+            timelineData.push({
+              nodes: currentNodes,
+              links: previousLinks, // Updated links
+              time: currentTime
+            });
+            currentTime = time;
+          }
+
+          currentNodes = currentNodes.map(function (node) {
+            var newNode = Object.assign({}, node); // Clone the node
+            if (newNode.id === infectionNode.id) {
+              newNode.category = infectionNode.category; // Update infection status
+            }
+            return newNode;
+          });
+
+          // Update link colors
+          var links = previousLinks.map(function (link) {
+            var newLink = Object.assign({}, link); // Clone the link
+            if (currentNodes[newLink.target].category !== undefined) {
+              // Set link color based on the target node's category
+              newLink.lineStyle = {
+                color: currentNodes[newLink.target].category
+              };
+            }
+            return newLink;
+          });
+
+          // Update previous links
+          previousLinks = links;
+        });
+
+        // Add the final time point
+        timelineData.push({
+          nodes: currentNodes,
+          links: previousLinks, // Updated links
+          time: currentTime
+        });
+
+        // Add timeline configuration
+        myChart.setOption({
+          baseOption: {
+            timeline: {
+              axisType: 'category',
+              data: timelineData.map(function (data) {
+                return data.time;
+              }),
+              autoPlay: true,
+              playInterval: 1000,
+              loop: false,
+              left: 'center',
+              width: '80%',
+              label: {
+                show: false,
+                fontSize: 12,
+                interval: 0
+              }
+            }
+          },
+          options: timelineData.map(function (data) {
+            return {
+              series: [
+                {
+                  data: data.nodes
+                }
+              ],
+              links: data.links // Updated links
+            };
+          })
+        });
+      });
+    }
+
+    // Load the static graph initially
+    loadStaticGraph();
+
+    window.addEventListener('resize', myChart.resize);
+</script>
+</body>
+</html>

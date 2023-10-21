@@ -1,0 +1,48 @@
+<html>
+    <head>
+        <style>
+            svg{
+                width: 1000px;
+                height: 1000px;
+                outline: 1px solid #1d9bf0;
+    
+
+                overflow: visible;
+
+                margin-top: 1em;
+            }
+
+            html{
+                text-align: center;
+            }
+
+        </style>
+    </head>
+    <body>
+        <svg id="dsvg"></svg>
+        <script src="./script/d3.min.js"></script>
+        <script src="./script/data.js"></script>
+        <script src="./script/force_simulation.js"></script>
+        
+        <script>
+            async function main(){           
+                let data = await d3.json("./data/demo_dissem_original.json");
+                window.dataHandler = new GraphDataHandler(data);     
+                // window.app = new App(d3.select("#dsvg"), EXAMPLE.nodes, EXAMPLE.edges);
+                // window.app = new App(d3.select("#dsvg"), dataHandler.allNodes, dataHandler.allEdges);
+                console.log(dataHandler)
+                window.app = new App(d3.select("#dsvg"), dataHandler.allNodes, dataHandler.allEdges, dataHandler);
+                // window.app = new App(d3.select("#dsvg"), dataHandler.unodes, dataHandler.getEdgesBetweenUNodes());
+            }
+            main();
+            function saveSVGtoLocalStorage() {
+                const svgElement = document.querySelector("#dsvg");
+                const serializer = new XMLSerializer();
+                const svgString = serializer.serializeToString(svgElement);
+                localStorage.setItem('savedSVG', svgString);
+            }
+
+
+        </script>
+    </body>
+</html>

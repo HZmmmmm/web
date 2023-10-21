@@ -1,0 +1,102 @@
+{
+  "nodes": [
+    {
+      "id": "0",
+      "name": "Myriel",
+      "symbolSize": 19.12381,
+      "follower": 28,
+      "category": 1,
+      "x": -0.6909126938759229,
+      "y": 0.414485243478675,
+      "timesacpe": "2021-05-05T02:00:48.000Z"
+    },
+    {
+      "id": "0",
+      "name": "Myriel",
+      "symbolSize": 19.12381,
+      "value": 28.685715,
+      "category": 2,
+      "x": -0.6909126938759229,
+      "y": 0.414485243478675,
+      "timesacpe": "2021-05-05T02:04:48.000Z"
+    },
+    {
+      "id": "1",
+      "name": "Napoleon",
+      "symbolSize": 2.6666666666666665,
+      "value": 4,
+      "category": 1,
+      "x": -0.8383529667025965,
+      "y": 0.6838176510622314,
+      "timesacpe": "2021-05-05T02:01:48.000Z"
+    },
+    
+    {
+      "id": "1",
+      "name": "Napoleon",
+      "symbolSize": 2.6666666666666665,
+      "value": 4,
+      "category": 2,
+      "x": -0.8383529667025965,
+      "y": 0.6838176510622314,
+      "timesacpe": "2021-05-05T02:05:48.000Z"
+    },
+    {
+      "id": "2",
+      "name": "MlleBaptistine",
+      "symbolSize": 6.323809333333333,
+      "value": 9.485714,
+      "category": 1,
+      "x": -0.49937576013573326,
+      "y": 0.22167556064400395,
+      "timesacpe": "2021-05-05T02:02:48.000Z"
+    },
+    {
+      "id": "3",
+      "name": "MmeMagloire",
+      "symbolSize": 6.323809333333333,
+      "value": 9.485714,
+      "category": 1,
+      "x": -0.4549174767812807,
+      "y": 0.2777669624306012,
+      "timesacpe": "2021-05-05T02:03:48.000Z"
+    },
+    {
+      "id": "7",
+      "name": "Count",
+      "symbolSize": 11.6666666666666665,
+      "value": 4,
+      "category": 1,
+      "x": -0.9555735649982253,
+      "y": 0.4680189857457556,
+      "timesacpe": "2021-05-05T02:03:48.000Z"
+    }
+  ],
+  "links": [
+    {
+      "source": "0",
+      "target": "1"
+    },
+    {
+      "source": "1",
+      "target": "2"
+    },
+    {
+      "source": "2",
+      "target": "3"
+    }
+
+  ],
+  "categories": [
+    {
+      "name": "non-infection"
+    },
+    {
+      "name": "true-news"
+    },
+    {
+      "name": "fake-news"
+    }
+
+  ]
+}

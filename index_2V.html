@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS54-2V</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div id="background">
+        <div id="headline">
+            Viral News Pulse:<br>Tracing <em>Real vs. Fake</em> in the Social Web
+        </div>
+        
+        <div id="content">
+            <p>Dive into the digital battleground of real versus fake news on Twitter, 'Viral News Pulse' maps the intricate pathways of information, authentic or deceptive, as it traverses the social web.</p>
+            <div class="C-content">
+                <p>Using a rich dataset of <span style="color: #1d9bf0; font-size: 26px; font-weight: bold;">5 million tweets</span>, we illuminate the dynamics of truth and deception, offering insights for a discerning public.</p>
+            </div>
+        </div>
+
+        <div id="title">Why?</div>
+        <div id="content">
+            <p>Within the expanse of Twitter's collected data, dissecting the interplay and influence between genuine news tweets and their fabricated counterparts unveils deep-seated intricacies. Their coexistence is not a mere juxtaposition.</p>
+            <div class="C-content">
+                <p>Astonishingly, our findings indicate that<br><span style="color: #1d9bf0; font-size: 26px; font-weight: bold;">genuine news tweets don't notably stem the tide of falsehoods in this digital realm.</span></p>
+            </div>
+            <p>This challenges our perceptions of online interactions and compels us to reevaluate the potency of the narratives we encounter. As the boundaries become increasingly indistinct in the world of social media, grasping this evolving dynamic is paramount for insightful digital traversal.</p>
+        </div>
+
+        <div id="title">Dataset Collected Using Twitter API</div>
+        <div id="content">
+            <p>Employing the <span style="color: #1d9bf0; border-bottom: 2px solid #1d9bf0;">Twitter API</span>, we've amassed a dataset spanning <span style="color: #1d9bf0; border-bottom: 2px solid #1d9bf0;">approximately six months</span>, comprised of about <span style="color: #1d9bf0; border-bottom: 2px solid #1d9bf0;">5 million tweets</span>.</p>
+            <p>This collection encapsulates <span style="color: #1d9bf0; font-size: 26px; font-weight: bold;">404 instances of fake news</span> identified by fact-checking platforms, along with their <span style="color: #1d9bf0; border-bottom: 2px solid #1d9bf0;">verified genuine news counterparts and affiliated tweets (retweets, quoted tweets, and responses)</span>.</p>
+        </div>
+
+        <div id="title">User Map on Social Network</div>
+        <div id="content">
+            <p>Utilized D3's force-directed graphs to pre-set layouts for all nodes in the different Sets. The result showcases nodes of varying sizes and clustering degrees in a social network community.</p>
+            <div class="C-content">
+                <p><span style="color: #1d9bf0; font-size: 26px; font-weight: bold;">Blue nodes</span> represent users <span style="color: #1d9bf0; font-size: 26px; font-weight: bold;">involved</span> in news dissemination.<br><span style="color: #1d9bf0; font-size: 26px; font-weight: bold;">Gray nodes</span> represent users <span style="color: #1d9bf0; font-size: 26px; font-weight: bold;">not involved</span>in news dissemination.</p>
+            </div>
+        </div>
+        <!-- <div id="map">
+            <div class="C-content">
+                <p><span style="font-size: 24px; font-weight: bold;">Social network node graph in Set 42 </span><span style="font-size: 15px;"> (node: 34/20,000)</span></p>
+            </div>
+            <img id="mapImage" src="layout/42-2W.png" alt="42-2W">
+        </div> -->
+        <div id="map">
+            <div class="C-content">
+                <p><span style="font-size: 24px; font-weight: bold;">Social network node graph in Set 42 </span><span style="font-size: 15px;"> (node: 34/20,000)</span></p>
+            </div>
+            <div id="svgContainer"></div>
+        </div>
+        
+
+        <div id="title" class="navDropdown custom-title">Demonstrating the Dissemination</div>
+        <div id="content">
+            <p>To commence a dissemination showcase tailored to your interests, choose the Twitterset you wish to explore from the dropdown list
+                <select id="Selector"></select>
+                You'll be presented with <span style="color: #1d9bf0; border-bottom: 2px solid #1d9bf0;">Social Network of the TwitterSet (Initial State)</span>.
+            </p>
+
+            <div class="C-content">
+                <p style="color: #1d9bf0; font-size: 26px; font-weight: bold;">Nodes represent Twitter users.<br>Edges represent connections between people (one-way or mutual followers).</p>
+            </div>
+
+
+            <p>By clicking <button id="startDisButton">Start Dissemination</button>, you can begin to see the effects of the infection.</p>
+            <p>If you'd like to re-experience the demonstration, you can <button id="replayDisButton">Replay Dissemination</button>.</p>
+        </div>
+        
+        <div id="title">Start Dissemination by selecting the Twitterset</div>
+        <div id="canvas">
+            <div id="infection"></div>
+        </div>
+
+        <div id="title">Degree Distribution of Social Network (Follower Repeated IDs)</div>
+        <div id="canvas">
+            <div id="degree"></div>
+        </div>
+    </div>
+
+    <!-- 猫爪图的效果还行 -->
+    <script>
+        const map = document.getElementById("map");
+const mapImage = document.getElementById("mapImage");
+
+let isDragging = false;
+let startDragX = 0;
+let startDragY = 0;
+let currentOffsetX = 0;
+let currentOffsetY = 0;
+let zoomScale = 1;
+
+document.addEventListener("DOMContentLoaded", function() {
+    const savedSVGString = localStorage.getItem('savedSVG');
+    if (savedSVGString) {
+        const svgContainer = document.getElementById('svgContainer');
+        svgContainer.innerHTML = savedSVGString;
+    } else {
+        console.error("No saved SVG found in localStorage.");
+    }
+});
+
+map.addEventListener("mousedown", (e) => {
+    isDragging = true;
+    startDragX = e.clientX - mapImage.getBoundingClientRect().left;
+    startDragY = e.clientY - mapImage.getBoundingClientRect().top;
+    map.style.cursor = "grabbing";
+});
+
+window.addEventListener("mousemove", (e) => {
+    if (isDragging) {
+        const offsetX = e.clientX - startDragX;
+        const offsetY = e.clientY - startDragY;
+        
+        // 限制拖动范围
+        const maxOffsetX = (mapImage.clientWidth * zoomScale) - map.clientWidth;
+        const maxOffsetY = (mapImage.clientHeight * zoomScale) - map.clientHeight;
+        currentOffsetX = Math.min(0, Math.max(-maxOffsetX, offsetX));
+        currentOffsetY = Math.min(0, Math.max(-maxOffsetY, offsetY));
+
+        mapImage.style.transform = `translate(${currentOffsetX}px, ${currentOffsetY}px)`;
+    }
+});
+
+window.addEventListener("mouseup", () => {
+    isDragging = false;
+    map.style.cursor = "grab";
+});
+
+map.addEventListener("wheel", (e) => {
+    e.preventDefault();
+    const scale = 1 + (e.deltaY > 0 ? -0.1 : 0.1); // 调整缩放幅度
+    zoomScale *= scale;
+
+    // 限制缩放范围
+    const minScale = 0.8;
+    const maxScale = 5.0;
+    zoomScale = Math.min(maxScale, Math.max(minScale, zoomScale));
+
+    mapImage.style.transform = `scale(${zoomScale}) translate(${currentOffsetX}px, ${currentOffsetY}px)`;
+});
+
+    </script>
+    <script>
+        window.onload = function() {
+            displaySVGinContainer();
+        }
+    </script>
+    
+
+    <!-- 选择框The contents of the selection box -->
+    <script>
+        var Selector = document.getElementById("Selector");
+        Selector.innerHTML = "";
+
+        var defaultOption = document.createElement("option");
+        defaultOption.value = ""; // 设置默认选项的值为空
+        defaultOption.textContent = "Select Twitterset";
+        Selector.appendChild(defaultOption);
+        
+        var optionA = document.createElement("option");
+        optionA.value = "42A";
+        optionA.textContent = "Twitterset 42A";
+        Selector.appendChild(optionA);
+        
+        var optionB = document.createElement("option");
+        optionB.value = "42B";
+        optionB.textContent = "Twitterset 42B";
+        Selector.appendChild(optionB);
+    </script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.0/echarts.min.js"></script>
+
+<script type="text/javascript">
+    var dom = document.getElementById('infection');
+
+
+    var myChart = echarts.init(dom, null, {
+        renderer: 'canvas',
+        useDirtyRect: false
+    });
+    
+    var app = {};
+    var option;
+    
+    function loadStaticGraph() {
+        myChart.showLoading();
+        $.getJSON('echarts/test1.json', function (graph) {
+            myChart.hideLoading();
+            graph.nodes.forEach(function (node) {
+                node.label = {
+                    show: node.symbolSize > 80
+                };
+            });
+            
+            option = {
+                title: {
+                    text: '',
+                    subtext: 'Default layout',
+                    top: 'bottom',
+                    left: 'right'
+                },
+                
+                tooltip: {
+                    trigger: 'item',
+                    formatter: function (params) {
+                        if (params.dataType === 'node') {
+                            return 'userid:' + params.name + ' <br> ' + 'uservalue:' + params.value;
+                        }
+                        
+                        if (params.dataType === 'edge') {
+                            var sourceNode = graph.nodes[params.data.source];
+                            var targetNode = graph.nodes[params.data.target];
+                            return sourceNode.name + ' -> ' + targetNode.name;
+                        }
+                    }
+                },
+                
+                legend: [{
+                    selectedMode: '',
+                    data: graph.categories.map(function (a) {
+                        return a.name;
+                    })
+                }],
+                
+                animationDuration: 1500,
+                animationEasingUpdate: 'quinticInOut',
+                series: [
+                    {
+                        name: '',
+                        type: 'graph',
+                        layout: 'none',
+                        data: graph.nodes,
+                        links: graph.links,
+                        categories: graph.categories,
+                        roam: true,
+                        
+                        label: {
+                            position: 'right',
+                            formatter: '{b}'
+                        },
+                        
+                        lineStyle: {
+                            color: 'target', // 边的颜色按照源节点染色
+                            curveness: 0.3
+                        },
+                        
+                        emphasis: {
+                            focus: 'adjacency',
+                            lineStyle: {
+                                width: 10
+                            }
+                        }
+                    }
+                ]
+            };
+            
+            myChart.setOption(option);
+            
+
+            // document.addEventListener('click', function () {
+                
+            //     loadInfectionGraph();
+            //     var graphElement = document.getElementById('graph');
+            //     document.removeEventListener('click', arguments.callee);
+            // }); //可视化效果中的开始感染, 缺点：点击网页任意部分都会开始传染，优点：点击点可以开始
+        });
+    }
+
+
+    // 通过点击开始按钮进行感染
+    function startInfection() {
+        loadInfectionGraph();
+        document.getElementById('startDisButton').removeEventListener('click', startInfection);
+    }
+    
+    document.getElementById('startDisButton').addEventListener('click', startInfection);
+    
+    function loadInfectionGraph() {
+        // Load and display the infection graph
+        $.getJSON('echarts/test2.json', function (infectionData) {
+            // Sort the infection nodes by timestamp
+            infectionData.nodes.sort(function (a, b) {
+                return new Date(a.timesacpe) - new Date(b.timesacpe);
+            });
+            
+            // Create a timeline array to store different time states
+            var timelineData = [];
+            var previousNodes = option.series[0].data; // Save the nodes from the static graph
+            var previousLinks = option.series[0].links; // Save the links from the static graph
+            var currentTime = null;
+            var currentNodes = previousNodes.map(function (node) {
+                return Object.assign({}, node);
+            });
+            
+            infectionData.nodes.forEach(function (infectionNode) {
+                var time = infectionNode.timesacpe;
+                if (time !== currentTime) {
+                    // If the time has changed, save the current state
+                    timelineData.push({
+                        nodes: currentNodes,
+                        links: previousLinks, // Updated links
+                        time: currentTime
+                    });
+                    currentTime = time;
+                }
+                
+                currentNodes = currentNodes.map(function (node) {
+                    var newNode = Object.assign({}, node); // Clone the node
+                    if (newNode.id === infectionNode.id) {
+                        newNode.category = infectionNode.category; // Update infection status
+                    }
+                    return newNode;
+                });
+                
+                // Update link colors
+                var links = previousLinks.map(function (link) {
+                    var newLink = Object.assign({}, link); // Clone the link
+                    if (currentNodes[newLink.target].category !== undefined) {
+                        // Set link color based on the target node's category
+                        newLink.lineStyle = {
+                            color: currentNodes[newLink.target].category
+                        };
+                    }
+                    
+                    return newLink;
+                });
+                
+                // Update previous links
+                previousLinks = links;
+            });
+            
+            // Add the final time point
+            timelineData.push({
+                nodes: currentNodes,
+                links: previousLinks, // Updated links
+                time: currentTime
+            });
+            
+            // Add timeline configuration
+            myChart.setOption({
+                baseOption: {
+                    timeline: {
+                        axisType: 'category',
+                        data: timelineData.map(function (data) {
+                            return data.time;
+                        }),
+                        autoPlay: true,
+                        playInterval: 1000,
+                        loop: false,
+                        left: 'center',
+                        width: '80%',
+                        label: {
+                            show: false,
+                            fontSize: 50,
+                            interval: 0
+                        }
+                    }
+                },
+                
+                options: timelineData.map(function (data) {
+                    return {
+                        series: [{
+                            data: data.nodes
+                        }],
+                        
+                        links: data.links // Updated links
+                    };
+                })
+            });
+        });
+    }
+    
+    // 重置时间轴，实现重现传播的效果
+    var timelineIndex = 0;
+    
+    // Function to initialize the chart
+    function initChart(timelineData) {
+        myChart.setOption({
+            baseOption: {
+                timeline: {
+                    axisType: 'category',
+                    
+                    data: timelineData.map(function (data) {
+                        return data.time;
+                    }),
+                    autoPlay: true,
+                    playInterval: 1000,
+                    loop: false,
+                    currentIndex: timelineIndex, // Set the current index
+                    left: 'center',
+                    width: '80%',
+                    label: {
+                        show: false,
+                        fontSize: 50,
+                        interval: 0
+                    }
+                }
+            },
+            
+            options: timelineData.map(function (data) {
+                return {
+                    series: [{
+                        data: data.nodes
+                    }],
+                    
+                    links: data.links
+                };
+            })
+        });
+        
+        // Add a listener for the timeline change event
+        myChart.on('timelinechanged', function (params) {
+            timelineIndex = params.currentIndex;
+        });
+    }
+
+    // Function to replay the dissemination
+    function replayDissemination() {
+        timelineIndex = 0; // Reset the timeline index
+        myChart.dispatchAction({
+            type: 'timelineChange',
+            currentIndex: 0 // Set the timeline to the first index
+        });
+    }
+    
+    // Add an event listener for the "Replay Dissemination" button
+    document.getElementById('replayDisButton').addEventListener('click', replayDissemination);// 重置按钮实现的代码
+    
+    // Load the static graph initially
+    loadStaticGraph();
+    window.addEventListener('resize', myChart.resize);
+</script>
+
+<!-- 绘制Degree图 -->
+<script>
+// 获取容纳图表的 DOM 元素
+var chartContainer = document.getElementById('degree');
+
+// 创建 ECharts 图表实例
+var chart = echarts.init(chartContainer);
+
+// Degree 分布数据
+var degreeDistributionData = [
+{
+        "degree": 1,
+        "count": 22204
+    },
+    {
+        "degree": 2,
+        "count": 1487
+    },
+    {
+        "degree": 3,
+        "count": 376
+    },
+    {
+        "degree": 4,
+        "count": 159
+    },
+    {
+        "degree": 5,
+        "count": 65
+    },
+    {
+        "degree": 6,
+        "count": 39
+    },
+    {
+        "degree": 7,
+        "count": 36
+    },
+    {
+        "degree": 8,
+        "count": 19
+    },
+    {
+        "degree": 9,
+        "count": 5
+    },
+    {
+        "degree": 10,
+        "count": 7
+    },
+    {
+        "degree": 11,
+        "count": 0
+    },
+    {
+        "degree": 12,
+        "count": 1
+    },
+];
+
+// 提取 degree 和 count 数据
+var degrees = degreeDistributionData.map(function (item) {
+    return item.degree;
+});
+var counts = degreeDistributionData.map(function (item) {
+  return item.count;
+});
+
+
+// 配置 ECharts 图表选项
+var option = {
+    grid: {
+        containLabel: true
+    },
+    
+    resize: true,
+    
+    xAxis: {
+        type: 'category',
+        data: degrees,
+        name: 'Degree',
+        nameTextStyle: {
+            color: '#02f1ff', // X轴标签颜色
+            fontSize: 20, // X轴标签字体大小
+            fontWeight: 'normal', // X轴标签字体粗细
+        },
+        axisLabel: {
+            textStyle: {
+                color: '#02f1ff', // X轴刻度标签颜色
+                fontSize: 20, // X轴刻度标签字体大小
+                fontWeight: 'normal', // X轴刻度标签字体粗细
+            },
+        },
+    },
+
+    yAxis: {
+        type: 'value',
+        name: 'Count',
+
+        nameTextStyle: {
+            color: '#02f1ff', // Y轴标签颜色
+            fontSize: 20, // Y轴标签字体大小
+            fontWeight: 'normal', // Y轴标签字体粗细
+        },
+
+        axisLabel: {
+            textStyle: {
+                color: '#02f1ff', // Y轴刻度标签颜色
+                fontSize: 20, // Y轴刻度标签字体大小
+                fontWeight: 'normal', // Y轴刻度标签字体粗细
+            },
+        },
+    },
+    
+    series: [{
+        type: 'bar',
+        data: counts,
+        name: 'Node Count',
+
+        itemStyle: {
+            // 修改柱状图的颜色
+            color: '#fab7c4', // 设置为您希望的颜色
+            barBorderRadius: [10, 10, 0, 0], // 上面两个角设置为圆角
+        },
+        
+        label: {
+            show: true, // 显示标签
+            position: 'top', // 标签位置，可以根据需要进行调整
+            
+            textStyle: {
+                color: '#ff7893', // 设置标签文本颜色
+                fontSize: 18, // 设置标签字体大小
+                fontWeight: "born",
+            },
+        },
+    },],
+};
+
+// 使用配置项设置图表
+chart.setOption(option);
+
+window.addEventListener('resize', function () {
+    chart.resize();
+});
+</script>
+
+</body>
+</html>

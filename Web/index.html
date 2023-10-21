@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS54</title>
+    <link rel="stylesheet" href="./style.css">
+
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+
+</head>
+<body>
+    <!-- <div id="L-background">
+        <div id="navigator">
+            <button id="button1">Button 1</button>
+            <button id="button2">Button 2</button>
+        </div>
+    </div> -->
+
+    <div id="R-background">
+        <div id="headline">
+            Viral News Pulse:<br>Tracing <em>Real vs. Fake</em> in the Social Web
+        </div>
+
+        <div id="content"><!--outline text content-->
+            <p>Dive into the digital battleground of real versus fake news on Twitter, 'Viral News Pulse' maps the intricate pathways of information, authentic or deceptive, as it traverses the social web.</p>
+            <p>Using a rich dataset of <span style="font-weight: bold;">5 million tweets</span>, we illuminate the dynamics of truth and deception, offering insights for a discerning public.</p>
+            <p>As misinformation mires our digital dialogues, join us in exploring its depths and discovering the patterns that shape our collective consciousness.</p>
+        </div>
+        
+        
+        <div id="content">
+            <div id="title">Why?</div><!--Why text content-->
+            <p>Within the expanse of our Twitter API-collected data, dissecting the interplay and influence between genuine news tweets and their fabricated counterparts unveils deep-seated intricacies. Their coexistence is not a mere juxtaposition.</p>
+            <p>Astonishingly, our findings indicate that<br><span style="font-size: 25px; font-weight: bold;">genuine news tweets don't notably stem the tide of falsehoods in this digital realm.</span></p>
+            <p>This challenges our perceptions of online interactions and compels us to reevaluate the potency of the narratives we encounter. As the boundaries become increasingly indistinct in the world of social media, grasping this evolving dynamic is paramount for insightful digital traversal.</p>
+        </div>
+        
+        <div id="title">Dataset Collected Using Twitter API</div><!--Dataset Collected Using Twitter API text content-->
+        <div id="content">
+            <p>We delve into and illustrate the impact of genuine news on the dissemination of fake news within the realm of social media networks, utilizing data extracted from Twitter. </p>
+            <p>Employing the <u>Twitter API</u>, we've amassed a dataset spanning <u>approximately six months</u>, comprised of about <u>5 million tweets</u>.</p>
+            <p>This collection encapsulates <span style="font-weight: bold;">404 instances of fake news</span> identified by fact-checking platforms, along with their <u>verified genuine news counterparts and affiliated tweets (retweets, quoted tweets, and responses)</u>.</p>
+            <p>To provide readers with an intuitive grasp of the dissemination dynamics of both genuine and fake news within this social framework, we've distilled the complexities of human interaction into a <span style="font-weight: bold;">Rudimentary Network</span>.</p>
+            <p style="font-weight: bold;">Nodes represent Twitter users.<br>Edges represent connections between people (one-way or mutual followers).</p>
+            
+            <!-- 猫爪图的位置 -->
+            <!-- <div id="viewshow"></div> -->
+
+            <p>The initial description is the underlying social network graph.
+                <br>During the dynamic propagation of true and false news, the users who retweet such news and the paths (edges) of these narratives are marked with colors.</p>
+            <p>This vividly and succinctly mirrors the propagation and counteraction of news veracity within the network, investigating the potential mitigating effect genuine news might have on curtailing the proliferation of fakehoods on the Twitter landscape. Furthermore, our endeavor extends to unraveling latent connections between user networks associated with both truth and fabrications via network visualization analytics.</p>
+            <p>We've categorized our dataset into <span style="font-weight: bold;">404 sets</span>, each corresponding to one of <span style="font-weight: bold;">the 404 fake news origin points.</span></p>
+            <p>By selecting various sets, you can explore and delve deeply into the data analysis insights specific to each set:</p>
+            
+            <p><span style="font-weight: bold;">1. Social Network of the TwitterSet (Initial State)</span>
+                <br>In this visualization, we present the foundational structure of the social network drawn from our dataset. Each dark gray dot represents a Twitter user. The size of each dot corresponds to the number of followers that particular user possesses. Edges or lines between dots signify the following relationship between users: lighter edges indicate a one-way follow, while darker edges denote a mutual, two-way follow relationship.
+                <br>Importantly, while our actual dataset contains over twenty million users, rendering all of these users in a single visualization would be cumbersome and might not offer a clear representation. Hence, to achieve a more interpretable and efficient display, we utilize a representative sampling method and showcase only 3,000 users, which serve as proxies for the larger user base. This scaled-down representation retains the inherent structure and intricacies of the original network. You can seamlessly switch between a macro (global) and micro (local) view of the network using the zoom functionality, ensuring a comprehensive and nuanced exploration of the social connections.
+                <br><span style="font-style: italic;">Purpose:</span> This visualization serves as a baseline structure of the Twitter user network. By understanding the foundational connections and influence hierarchy (through the size of the dots), you can gain insights into the inherent structure and relationships within the community.
+            </p>
+
+            <p><span style="font-weight: bold;">2. Dissemination of Real and Fake News within the Social Network (Dynamic Demonstration)</span>
+                <br>Upon interaction with specific news items, users within our network get color-coded based on the type of news they engage with. Those who interact with genuine news are colored in blue, whereas interactions with fake news result in a red hue for the user.
+                <br><span style="font-style: italic;">Purpose:</span> This visualization dynamically demonstrates the spread and influence of both genuine and fake news within the network. Observing the real-time color changes aids in pinpointing areas or clusters more susceptible to misinformation. This becomes crucial for interventions aiming to counteract the spread of fake narratives, as it identifies key nodes or users influencing the propagation of information.
+            </p>
+
+            <p><span style="font-weight: bold;">3.Degree Distribution of Social Network (Follower Repeated IDs)</span>
+                <br>This visualization offers a detailed perspective of follower patterns within a social network, emphasizing exposure to news dissemination, regardless of whether the news is real or fake. For a clearer understanding:
+                <br>Consider a sample comprised of 400 Twitter users. Within this network, 10 users are distinctly identified as primary news publishers. Delving deeper into the data, the visualization reveals:
+                <ul>
+                    <li>100 users exclusively follow one among these 10 news distributors,</li>
+                    <li>40 users are connected with two out of these 10 news narrators,</li>
+                    <li>15 users follow more than three of these news publishers;</li>
+                </ul>
+                <br>and this pattern continues in a similar manner.
+                <br><br><span style="font-style: italic;">Purpose:</span> From an academic lens, this distribution uncovers the concentration of news dissemination within the network, quantifying users' exposure to such narratives, whether the news is real or fake. Such insights are pivotal for academia to gauge users' sensitivity to diverse news based on their connective patterns.
+                <br>In a practical realm, comprehending this distribution is paramount for digital platforms intent on optimizing news dissemination. By focusing on users linked to multiple news sources, strategic interventions can be custom-designed, ensuring an enhancement in the quality of news content received by users.
+            </p>
+        </div>
+        
+        <div id="title">Demonstrating the Dissemination</div><!--Demonstrating the Dissemination text content (Button - subsequent connection jumps required)-->
+        <div id="content">
+            <div id="content-nav">
+            <p>To commence a dissemination showcase tailored to your interests, choose the Twitterset you wish to explore from the dropdown list</span> 
+                <select id="Selector"></select> and <button id="selectButton" style="font-weight: bold;">Select Twitterset</button>.
+                You'll be presented with <span style="font-weight: bold;">Social Network of the TwitterSet (Initial State)</span>.
+            </p>
+            <p>Then, hit <button id="startDisButton" style="font-weight: bold;">Start Dissemination</button>. In the following interface, you'll be introduced to data analysis demonstrations as discussed earlier, which includes:</p>
+            <ul>
+                <li>Dissemination of Real and Fake News within the Social Network (Dynamic Demonstration)</li>
+                <li>Degree Distribution of the Social Network (Follower Repeated IDs)</li>
+            </ul>
+            <!-- <p>If you wish to pause and delve into the specifics, you can <button id="pauseDisButton" style="font-weight: bold;">Pause Dissemination</button>.</p>
+            <p>If you want to continue the dissemination, you can <button id="resumeDisButton" style="font-weight: bold;">Resume Dissemination</button>.</p> -->
+            <p>If you'd like to re-experience the demonstration, you can <button id="replayDisButton" style="font-weight: bold;">Replay Dissemination</button>.</p>
+            <!-- <p>If you're considering exploring another Twitterset, please <button style="font-weight: bold;">Reset Dissemination</button> and then go back to the previous dropdown to make a choice.</p> -->
+        </div>        
+    </div>
+        <!--Sliders (not needed for now)
+        <div id="content">
+            <strong>
+                <span style="color: #02f1ff;">Filter the number of IDs in different Sets:
+                    <input type="range" min="1" max="50" step="1" value="1" id="Slider">
+                    <span id="sliderValue" style="color: #02f1ff;">1</span>.
+                </span>
+            </strong>
+        </div>
+        <script>
+            var slider = document.getElementById("Slider");
+            var sliderValue = document.getElementById("sliderValue");
+
+            slider.oninput = function() {
+                sliderValue.textContent =this.value;
+            };
+        </script>
+        -->
+
+        
+        <div id="title">Start Dissemination by selecting the Twitterset</div>
+        <div id="canvas"  style="height: 650px;"></div>
+
+        <div id="title">Degree Distribution of Social Network (Follower Repeated IDs)</div>
+        <div id="degree" style="height: 650px"></div>
+        
+        <div id="content">
+            <p>Things We'd like to add</p>
+            <ul>
+                <li>Size of the dots
+                    <ul>
+                        <li>The larger the dot, the more attention is paid to it.</li>
+                    </ul>
+                </li>
+                <li>Length of Edge
+                    <ul>
+                        <li>The length of the edge represents the length of time the dot has been infected with the dot.</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+
+    </div> 
+
+    <script>/*选择框The contents of the selection box*/
+        var Selector = document.getElementById("Selector");
+
+        var newOption = document.createElement("option");
+
+        newOption.value = "demo";  // 设置值为 "demo"
+        newOption.textContent = "Twitterset demo";
+    
+        for (var i = 0; i <= 404; i++) {
+            var option = document.createElement("option");
+            option.value = "set" + i;
+            option.textContent = "Twitterset " + i;
+            Selector.appendChild(option);
+        }
+        Selector.appendChild(newOption);
+    </script>
+
+    <!-- 样本-可视化基底图+感染图 -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.0/echarts.min.js"></script>
+    
+    <script type="text/javascript">
+        var dom = document.getElementById('canvas');
+
+
+        var myChart = echarts.init(dom, null, {
+            renderer: 'canvas',
+            useDirtyRect: false
+        });
+        
+        var app = {};
+        var option;
+        
+        function loadStaticGraph() {
+            myChart.showLoading();
+            $.getJSON('echarts/test1.json', function (graph) {
+                myChart.hideLoading();
+                graph.nodes.forEach(function (node) {
+                    node.label = {
+                        show: node.symbolSize > 80
+                    };
+                });
+                
+                option = {
+                    title: {
+                        text: '',
+                        subtext: 'Default layout',
+                        top: 'bottom',
+                        left: 'right'
+                    },
+                    
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: function (params) {
+                            if (params.dataType === 'node') {
+                                return 'userid:' + params.name + ' <br> ' + 'uservalue:' + params.value;
+                            }
+                            
+                            if (params.dataType === 'edge') {
+                                var sourceNode = graph.nodes[params.data.source];
+                                var targetNode = graph.nodes[params.data.target];
+                                return sourceNode.name + ' -> ' + targetNode.name;
+                            }
+                        }
+                    },
+                    
+                    legend: [{
+                        selectedMode: '',
+                        data: graph.categories.map(function (a) {
+                            return a.name;
+                        })
+                    }],
+                    
+                    animationDuration: 1500,
+                    animationEasingUpdate: 'quinticInOut',
+                    series: [
+                        {
+                            name: '',
+                            type: 'graph',
+                            layout: 'none',
+                            data: graph.nodes,
+                            links: graph.links,
+                            categories: graph.categories,
+                            roam: true,
+                            
+                            label: {
+                                position: 'right',
+                                formatter: '{b}'
+                            },
+                            
+                            lineStyle: {
+                                color: 'target', // 边的颜色按照源节点染色
+                                curveness: 0.3
+                            },
+                            
+                            emphasis: {
+                                focus: 'adjacency',
+                                lineStyle: {
+                                    width: 10
+                                }
+                            }
+                        }
+                    ]
+                };
+                
+                myChart.setOption(option);
+                
+
+                // document.addEventListener('click', function () {
+                    
+                //     loadInfectionGraph();
+                //     var graphElement = document.getElementById('graph');
+                //     document.removeEventListener('click', arguments.callee);
+                // }); //可视化效果中的开始感染, 缺点：点击网页任意部分都会开始传染，优点：点击点可以开始
+            });
+        }
+
+
+        // 通过点击开始按钮进行感染
+        function startInfection() {
+            loadInfectionGraph();
+            document.getElementById('startDisButton').removeEventListener('click', startInfection);
+        }
+        
+        document.getElementById('startDisButton').addEventListener('click', startInfection);
+        
+        function loadInfectionGraph() {
+            // Load and display the infection graph
+            $.getJSON('echarts/test2.json', function (infectionData) {
+                // Sort the infection nodes by timestamp
+                infectionData.nodes.sort(function (a, b) {
+                    return new Date(a.timesacpe) - new Date(b.timesacpe);
+                });
+                
+                // Create a timeline array to store different time states
+                var timelineData = [];
+                var previousNodes = option.series[0].data; // Save the nodes from the static graph
+                var previousLinks = option.series[0].links; // Save the links from the static graph
+                var currentTime = null;
+                var currentNodes = previousNodes.map(function (node) {
+                    return Object.assign({}, node);
+                });
+                
+                infectionData.nodes.forEach(function (infectionNode) {
+                    var time = infectionNode.timesacpe;
+                    if (time !== currentTime) {
+                        // If the time has changed, save the current state
+                        timelineData.push({
+                            nodes: currentNodes,
+                            links: previousLinks, // Updated links
+                            time: currentTime
+                        });
+                        currentTime = time;
+                    }
+                    
+                    currentNodes = currentNodes.map(function (node) {
+                        var newNode = Object.assign({}, node); // Clone the node
+                        if (newNode.id === infectionNode.id) {
+                            newNode.category = infectionNode.category; // Update infection status
+                        }
+                        return newNode;
+                    });
+                    
+                    // Update link colors
+                    var links = previousLinks.map(function (link) {
+                        var newLink = Object.assign({}, link); // Clone the link
+                        if (currentNodes[newLink.target].category !== undefined) {
+                            // Set link color based on the target node's category
+                            newLink.lineStyle = {
+                                color: currentNodes[newLink.target].category
+                            };
+                        }
+                        
+                        return newLink;
+                    });
+                    
+                    // Update previous links
+                    previousLinks = links;
+                });
+                
+                // Add the final time point
+                timelineData.push({
+                    nodes: currentNodes,
+                    links: previousLinks, // Updated links
+                    time: currentTime
+                });
+                
+                // Add timeline configuration
+                myChart.setOption({
+                    baseOption: {
+                        timeline: {
+                            axisType: 'category',
+                            data: timelineData.map(function (data) {
+                                return data.time;
+                            }),
+                            autoPlay: true,
+                            playInterval: 1000,
+                            loop: false,
+                            left: 'center',
+                            width: '80%',
+                            label: {
+                                show: false,
+                                fontSize: 50,
+                                interval: 0
+                            }
+                        }
+                    },
+                    
+                    options: timelineData.map(function (data) {
+                        return {
+                            series: [{
+                                data: data.nodes
+                            }],
+                            
+                            links: data.links // Updated links
+                        };
+                    })
+                });
+            });
+        }
+        
+        
+        
+        // 重置时间轴，实现重现传播的效果
+        var timelineIndex = 0;
+        
+        // Function to initialize the chart
+        function initChart(timelineData) {
+            myChart.setOption({
+                baseOption: {
+                    timeline: {
+                        axisType: 'category',
+                        
+                        data: timelineData.map(function (data) {
+                            return data.time;
+                        }),
+                        autoPlay: true,
+                        playInterval: 1000,
+                        loop: false,
+                        currentIndex: timelineIndex, // Set the current index
+                        left: 'center',
+                        width: '80%',
+                        label: {
+                            show: false,
+                            fontSize: 50,
+                            interval: 0
+                        }
+                    }
+                },
+                
+                options: timelineData.map(function (data) {
+                    return {
+                        series: [{
+                            data: data.nodes
+                        }],
+                        
+                        links: data.links
+                    };
+                })
+            });
+            
+            // Add a listener for the timeline change event
+            myChart.on('timelinechanged', function (params) {
+                timelineIndex = params.currentIndex;
+            });
+        }
+
+        // Function to replay the dissemination
+        function replayDissemination() {
+            timelineIndex = 0; // Reset the timeline index
+            myChart.dispatchAction({
+                type: 'timelineChange',
+                currentIndex: 0 // Set the timeline to the first index
+            });
+        }
+        
+        // Add an event listener for the "Replay Dissemination" button
+        document.getElementById('replayDisButton').addEventListener('click', replayDissemination);// 重置按钮实现的代码
+        
+        
+        // Load the static graph initially
+        loadStaticGraph();
+        window.addEventListener('resize', myChart.resize);
+    </script>
+    
+    <!-- 绘制Degree图 -->
+    <script>
+    // 获取容纳图表的 DOM 元素
+    var chartContainer = document.getElementById('degree');
+    
+    // 创建 ECharts 图表实例
+    var chart = echarts.init(chartContainer);
+    
+    // Degree 分布数据
+    var degreeDistributionData = [
+    {
+            "degree": 1,
+            "count": 22204
+        },
+        {
+            "degree": 2,
+            "count": 1487
+        },
+        {
+            "degree": 3,
+            "count": 376
+        },
+        {
+            "degree": 4,
+            "count": 159
+        },
+        {
+            "degree": 5,
+            "count": 65
+        },
+        {
+            "degree": 6,
+            "count": 39
+        },
+        {
+            "degree": 7,
+            "count": 36
+        },
+        {
+            "degree": 8,
+            "count": 19
+        },
+        {
+            "degree": 9,
+            "count": 5
+        },
+        {
+            "degree": 10,
+            "count": 7
+        },
+        {
+            "degree": 11,
+            "count": 0
+        },
+        {
+            "degree": 12,
+            "count": 1
+        },
+        {
+            "degree": 13,
+            "count": 0
+        },
+        {
+            "degree": 14,
+            "count": 0
+        },
+        {
+            "degree": 15,
+            "count": 0
+        },
+        {
+            "degree": 16,
+            "count": 0
+        },
+        {
+            "degree": 17,
+            "count": 0
+        },
+        {
+            "degree": 18,
+            "count": 0
+        },
+        {
+            "degree": 19,
+            "count": 0
+        },
+        {
+            "degree": 20,
+            "count": 0
+        },
+        {
+            "degree": 21,
+            "count": 0
+        },
+        {
+            "degree": 22,
+            "count": 0
+        },
+        {
+            "degree": 23,
+            "count": 0
+        },
+        {
+            "degree": 24,
+            "count": 0
+        },
+        {
+            "degree": 25,
+            "count": 0
+        },
+        {
+            "degree": 26,
+            "count": 0
+        },
+        {
+            "degree": 27,
+            "count": 0
+        },
+        {
+            "degree": 28,
+            "count": 0
+        },
+        {
+            "degree": 29,
+            "count": 0
+        },
+        {
+            "degree": 30,
+            "count": 0
+        },
+        {
+            "degree": 31,
+            "count": 0
+        },
+        {
+            "degree": 32,
+            "count": 0
+        },
+        {
+            "degree": 33,
+            "count": 0
+        },
+        {
+            "degree": 34,
+            "count": 0
+        },
+        {
+            "degree": 35,
+            "count": 0
+        }
+    ];
+    
+    // 提取 degree 和 count 数据
+    var degrees = degreeDistributionData.map(function (item) {
+        return item.degree;
+    });
+    var counts = degreeDistributionData.map(function (item) {
+      return item.count;
+    });
+    
+    
+    // 配置 ECharts 图表选项
+    var option = {
+        grid: {
+            containLabel: true
+        },
+        
+        resize: true,
+        
+        xAxis: {
+            type: 'category',
+            data: degrees,
+            name: 'Degree',
+            nameTextStyle: {
+                color: '#02f1ff', // X轴标签颜色
+                fontSize: 20, // X轴标签字体大小
+                fontWeight: 'normal', // X轴标签字体粗细
+            },
+            axisLabel: {
+                textStyle: {
+                    color: '#02f1ff', // X轴刻度标签颜色
+                    fontSize: 20, // X轴刻度标签字体大小
+                    fontWeight: 'normal', // X轴刻度标签字体粗细
+                },
+            },
+        },
+
+        yAxis: {
+            type: 'value',
+            name: 'Count',
+
+            nameTextStyle: {
+                color: '#02f1ff', // Y轴标签颜色
+                fontSize: 20, // Y轴标签字体大小
+                fontWeight: 'normal', // Y轴标签字体粗细
+            },
+
+            axisLabel: {
+                textStyle: {
+                    color: '#02f1ff', // Y轴刻度标签颜色
+                    fontSize: 20, // Y轴刻度标签字体大小
+                    fontWeight: 'normal', // Y轴刻度标签字体粗细
+                },
+            },
+        },
+        
+        series: [{
+            type: 'bar',
+            data: counts,
+            name: 'Node Count',
+
+            itemStyle: {
+                // 修改柱状图的颜色
+                color: '#fab7c4', // 设置为您希望的颜色
+                barBorderRadius: [10, 10, 0, 0], // 上面两个角设置为圆角
+            },
+            
+            label: {
+                show: true, // 显示标签
+                position: 'top', // 标签位置，可以根据需要进行调整
+                
+                textStyle: {
+                    color: '#ff7893', // 设置标签文本颜色
+                    fontSize: 18, // 设置标签字体大小
+                    fontWeight: "born",
+                },
+            },
+        },],
+    };
+    
+    // 使用配置项设置图表
+    chart.setOption(option);
+    
+    window.addEventListener('resize', function () {
+        chart.resize();
+    });
+    </script>
+
+</body>
+</html>
